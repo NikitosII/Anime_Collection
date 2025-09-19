@@ -17,7 +17,7 @@ namespace DataAccess.Configurations
                 .IsRequired()
                 .HasConversion(
                     v => v.ToString(),
-                    v => (Status)Enum.Parse(typeof(Status), v));
+                    v => (Statuses)Enum.Parse(typeof(Statuses), v));
             builder.Property(e => e.Genres)
                 .HasConversion(
                     v => string.Join(',', v),

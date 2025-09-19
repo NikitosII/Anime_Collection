@@ -8,8 +8,9 @@ namespace Core.Models
         public const int Min_Rating = 0;
         public const int Max_Rating = 10;
 
-        private enum status 
-        { 
+        private enum Statuses
+
+        {
             Planned,
             Watching,
             Completed,
@@ -21,10 +22,10 @@ namespace Core.Models
         public double Rating { get; private set; }
         public string Status => _status.ToString();
 
-        private status _status;
+        private Statuses _status;
         public List<string> Genres { get; private set; } = new List<string>();
 
-        private Anime(Guid id, string title, double rating, status status, List<string> genres)
+        private Anime(Guid id, string title, double rating, Statuses status, List<string> genres)
         {
             Id = id;
             Title = title;
@@ -33,7 +34,7 @@ namespace Core.Models
             Genres = genres;
         }
 
-        public static (Anime? anime, string Errors) Create (Guid id, string title, double rating, string status, List<string> genres)
+        public static (Anime? anime, string Errors) Create (Guid id, string title,  string status, double rating, List<string> genres)
         {
             var errors = new List<string>();
 
@@ -55,9 +56,9 @@ namespace Core.Models
                 }
             }
 
-            if(!Enum.TryParse<status>(status, true, out var status_v))
+            if(!Enum.TryParse<Statuses>(status, true, out var status_v))
             {
-                errors.Add($"Invalid status. Allowed values: {string.Join(", ", Enum.GetNames(typeof(status)))}");
+                errors.Add($"Invalid status. Allowed values: {string.Join(", ", Enum.GetNames(typeof(Statuses)))}");
             }
 
             if (errors.Any())
@@ -71,8 +72,8 @@ namespace Core.Models
 
         public void Update(string title, string status, double rating, List<string> genres)
         {
-            if (!Enum.TryParse<status>(status, true, out var statusValue))
-                throw new ArgumentException($"Invalid status. Allowed values: {string.Join(", ", Enum.GetNames(typeof(status)))}");
+            if (!Enum.TryParse<Statuses>(status, true, out var statusValue))
+                throw new ArgumentException($"Invalid status. Allowed values: {string.Join(", ", Enum.GetNames(typeof(Statuses)))}");
 
             Title = title;
             _status = statusValue;

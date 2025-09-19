@@ -1,9 +1,7 @@
-﻿
-using System.ComponentModel.DataAnnotations.Schema;
-namespace DataAccess.Entities
+﻿namespace DataAccess.Entities
 {
-    public enum Status
-        {
+    public enum Statuses
+    {
             Planned,
             Watching,
             Completed,
@@ -14,10 +12,8 @@ namespace DataAccess.Entities
         
         public Guid Id { get; set; }
         public string Title { get; set; } = string.Empty;
-
-        [Column(TypeName = "decimal(3,1)")]
         public double Rating { get; set; }
-        public Status Status { get; set; }
+        public Statuses Status { get; set; }
         public List<string> Genres { get; set; } = new List<string>();
     }
 }
