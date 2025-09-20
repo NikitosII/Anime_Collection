@@ -77,8 +77,52 @@ namespace DataAccess.Repository
             return entity != null ? ToModel(entity) : null;
         }
 
+        public async Task<(IEnumerable<Anime> animes, int count)> GetAsync(string title, string status, string genres, string sortBy, bool sortDesc, int page, int pageSize)
+        {
+            var query = _context.Anime.AsQueryable();
 
+            // по названию
+            if (!string.IsNullOrEmpty(title))
+            {
+                query = query.Where(a => a.Title.ToLower().Contains(title.ToLower()));
+            }
 
+            // по жанрам
+            if (!string.IsNullOrEmpty(genres))
+            {
+                var list = genres.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                    .Select(a => a.Trim().ToLower())
+                    .ToList();
 
+                foreach (var item in list)
+                {
+                    query = query.Where(a => a.Genres.Any(x => x.ToLower() == genres));
+                }
+            }
+
+            // по статусу
+            if (!string.IsNullOrEmpty(status) && Enum.TryParse<Statuses>(status, true, out var status_v))
+            {
+                query = query.Where(a => a.Status == status_v);
+            }
+
+            var count = await query.CountAsync();
+
+            // сортировка собств
+            query = sortBy.ToLower() switch
+            {
+                "title" => sortDesc ? query.OrderByDescending(a => a.Title) : query.OrderBy(a => a.Title),
+                "rating" => sortDesc ? query.OrderByDescending(a => a.Rating) : query.OrderBy(a => a.Rating),
+                "status" => sortDesc ? query.OrderByDescending(a => a.Status) : query.OrderBy(a => a.Status)
+            };
+
+            // пагинацию сделать
+            query = query.Skip((page - 1) * pageSize).Take(pageSize);
+
+            var entities = await query.ToListAsync();
+            var animes = entities.Select(ToModel);
+            return (animes, count);
+
+        }
     }
 }
