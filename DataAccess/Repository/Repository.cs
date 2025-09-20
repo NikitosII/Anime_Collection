@@ -99,31 +99,41 @@ namespace DataAccess.Repository
 
                             foreach (var item in list)
                             {
-                                query = query.Where(a => a.Genres.Any(x => x.ToLower() == search));
+                                query = query.Where(a => a.Genres.Any(x => x.ToLower().Contains(item)));
                             }
                         }
                         break;
 
                     // по статусу
                     case "status":
-                        if (Enum.TryParse<Statuses>(search, true, out var status_v))
-                            query = query.Where(a => a.Status == status_v);
+                        {
+                            if (Enum.TryParse<Statuses>(search, true, out var status_v))
+                                query = query.Where(a => a.Status == status_v);
+                            else
+                                return (new List<Anime>(), 0);
+                        }
                         break;
 
-                    default:
-                        query = query.Where(a => a.Title.ToLower().Contains(search.ToLower()));
-                        break;
                 }
+            }
+            else if (!string.IsNullOrEmpty(search))
+            {
+                query = query.Where(a =>
+                                a.Title.ToLower().Contains(search.ToLower()) ||
+                                a.Genres.Any(g => g.ToLower().Contains(search.ToLower())) ||
+                                a.Status.ToString().ToLower().Contains(search.ToLower())
+                                );
             }
 
             var count = await query.CountAsync();
 
-            // сортировка собств
-            query = sortBy.ToLower() switch
+            // сортировка 
+            query = sortBy?.ToLower() switch
             {
                 "title" => sortDesc ? query.OrderByDescending(a => a.Title) : query.OrderBy(a => a.Title),
-                "rating" => sortDesc ? query.OrderByDescending(a => a.Rating) : query.OrderBy(a => a.Rating),
-                "status" => sortDesc ? query.OrderByDescending(a => a.Status) : query.OrderBy(a => a.Status)
+                "status" => sortDesc ? query.OrderByDescending(a => a.Status) : query.OrderBy(a => a.Status),
+                "genre" => sortDesc ? query.OrderByDescending(a => a.Genres.FirstOrDefault()) : query.OrderBy(a => a.Genres.FirstOrDefault()),
+                _ => sortDesc ? query.OrderByDescending(a => a.Title) : query.OrderBy(a => a.Title)
             };
 
             // пагинацию сделать
