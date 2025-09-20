@@ -25,10 +25,13 @@ namespace Anime_Collection.Controllers
         [HttpGet("filter")]
         public async Task<ActionResult<PaginResponse<Response>>> GetAnime([FromQuery] SearchParams searchParams)
         {
+            var sortList = new[] { "title", "genre", "status" };
+            if(string.IsNullOrEmpty(searchParams.SortBy.ToLower()) && sortList.Contains(searchParams.SortBy.ToLower())){
+                return BadRequest($"Invalid sort field. Allowed values: {string.Join(", ", sortList)}");
+            }
+
             var (animes, count) = await _service.GetWithFiltr(
-                searchParams.Title,
-                searchParams.Status,
-                searchParams.Genres,
+                searchParams.Search,
                 searchParams.SortBy,
                 searchParams.SortDesc,
                 searchParams.Page,
@@ -43,12 +46,12 @@ namespace Anime_Collection.Controllers
                 anime.Genres
             ));
 
-            var response = new PaginResponse<Response> (
+            var response = new PaginResponse<Response>(
                 entities,
                 searchParams.Page,
                 searchParams.Count,
-                count, 
-                (int)Math.Ceiling(count/(double)searchParams.Count)
+                count,
+                (int)Math.Ceiling(count / (double)searchParams.Count)
             );
             return Ok(response);
 

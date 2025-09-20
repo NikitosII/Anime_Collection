@@ -77,33 +77,43 @@ namespace DataAccess.Repository
             return entity != null ? ToModel(entity) : null;
         }
 
-        public async Task<(IEnumerable<Anime> animes, int count)> GetAsync(string title, string status, string genres, string sortBy, bool sortDesc, int page, int pageSize)
+        public async Task<(IEnumerable<Anime> animes, int count)> GetAsync(string search, string sortBy, bool sortDesc, int page, int pageSize)
         {
             var query = _context.Anime.AsQueryable();
 
-            // по названию
-            if (!string.IsNullOrEmpty(title))
+            if (!string.IsNullOrEmpty(search))
             {
-                query = query.Where(a => a.Title.ToLower().Contains(title.ToLower()));
-            }
-
-            // по жанрам
-            if (!string.IsNullOrEmpty(genres))
-            {
-                var list = genres.Split(',', StringSplitOptions.RemoveEmptyEntries)
-                    .Select(a => a.Trim().ToLower())
-                    .ToList();
-
-                foreach (var item in list)
+                switch (sortBy?.ToLower())
                 {
-                    query = query.Where(a => a.Genres.Any(x => x.ToLower() == genres));
-                }
-            }
+                    // по названию
+                    case "title":
+                        query = query.Where(a => a.Title.ToLower().Contains(search.ToLower()));
+                        break;
 
-            // по статусу
-            if (!string.IsNullOrEmpty(status) && Enum.TryParse<Statuses>(status, true, out var status_v))
-            {
-                query = query.Where(a => a.Status == status_v);
+                    // по жанрам
+                    case "genre":
+                        {
+                            var list = search.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                                                .Select(a => a.Trim().ToLower())
+                                                .ToList();
+
+                            foreach (var item in list)
+                            {
+                                query = query.Where(a => a.Genres.Any(x => x.ToLower() == search));
+                            }
+                        }
+                        break;
+
+                    // по статусу
+                    case "status":
+                        if (Enum.TryParse<Statuses>(search, true, out var status_v))
+                            query = query.Where(a => a.Status == status_v);
+                        break;
+
+                    default:
+                        query = query.Where(a => a.Title.ToLower().Contains(search.ToLower()));
+                        break;
+                }
             }
 
             var count = await query.CountAsync();

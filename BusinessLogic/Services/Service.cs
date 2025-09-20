@@ -35,9 +35,9 @@ namespace BusinessLogic.Services
         {
             return await _repository.GetById(id);
         }
-        public async Task<(IEnumerable<Anime> animes, int count)> GetWithFiltr(string title, string status, string genres, string sortBy, bool sortDesc, int page, int pageSize)
+        public async Task<(IEnumerable<Anime> animes, int count)> GetWithFiltr(string search, string sortBy, bool sortDesc, int page, int pageSize)
         {
-            return await _repository.GetAsync(title, status, genres, sortBy, sortDesc, page, pageSize);
+            return await _repository.GetAsync(search, sortBy, sortDesc, page, pageSize);
         }
 
     }

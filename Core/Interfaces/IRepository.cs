@@ -10,6 +10,6 @@ namespace DataAccess.Repository
         Task<Guid> Update(Anime anime);
         Task<Anime> GetById(Guid id);
         Task<(IEnumerable<Anime> animes, int count)> GetAsync(
-            string title, string status, string genres, string sortBy, bool sortDes, int page, int pageSize);
+            string search, string sortBy, bool sortDes, int page, int pageSize);
     }
 }
