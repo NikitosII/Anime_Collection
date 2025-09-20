@@ -19,7 +19,7 @@ namespace Anime_Collection.Controllers
         public async Task<ActionResult<IEnumerable<Response>>> GetAll()
         {
             var entities = await _service.GetAllAsync();
-            var response = entities.Select(x => new Response(x.Id, x.Title, x.Status, x.Rating,  x.Genres));
+            var response = entities.Select(x => new Response(x.Id, x.Title, x.Status, x.Rating, x.Genres));
             return Ok(response);
         }
 
@@ -50,7 +50,7 @@ namespace Anime_Collection.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<Guid>> Update (Guid id, Request request)
+        public async Task<ActionResult<Guid>> Update(Guid id, Request request)
         {
             var entity = await _service.GetById(id);
             if (entity == null)
@@ -58,11 +58,11 @@ namespace Anime_Collection.Controllers
                 return NotFound();
             }
 
-            var (anime, error) = Anime.Create(Guid.NewGuid(), request.Title, request.Status, request.Rating, request.Genres);
-            if (!string.IsNullOrEmpty(error))
-            {
-                return BadRequest(error);
-            }
+            entity.Update(
+                request.Title,
+                request.Status,
+                request.Rating,
+                request.Genres);
             var response = await _service.UpdateAsync(entity);
             return Ok(response);
 

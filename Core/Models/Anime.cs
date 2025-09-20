@@ -72,11 +72,42 @@ namespace Core.Models
 
         public void Update(string title, string status, double rating, List<string> genres)
         {
-            if (!Enum.TryParse<Statuses>(status, true, out var statusValue))
-                throw new ArgumentException($"Invalid status. Allowed values: {string.Join(", ", Enum.GetNames(typeof(Statuses)))}");
+            var errors = new List<string>();
+
+            if (string.IsNullOrEmpty(title) || title.Length > Max_L_Title)
+            {
+                errors.Add($"Title cannot be empty or longer than {Max_L_Title} characters.");
+            }
+
+            if (rating < Min_Rating || rating > Max_Rating)
+            {
+                errors.Add($"Rating must be between {Min_Rating} and {Max_Rating}.");
+            }
+
+            if (genres == null || !genres.Any())
+            {
+                errors.Add("At least one genre is required.");
+            }
+
+            if (genres != null)
+            {
+                foreach (var genre in genres)
+                {
+                    if (string.IsNullOrEmpty(genre) || genre.Length > Max_L_Genre)
+                        errors.Add($"Genre cannot be empty or longer than {Max_L_Genre} characters.");
+                }
+            }
+
+            if (!Enum.TryParse<Statuses>(status, true, out var status_v))
+            {
+                errors.Add($"Invalid status. Allowed values: {string.Join(", ", Enum.GetNames(typeof(Statuses)))}");
+            }
+
+            if (errors.Any())
+                throw new ArgumentException(string.Join(Environment.NewLine, errors));
 
             Title = title;
-            _status = statusValue;
+            _status = status_v;
             Rating = rating;
             Genres = genres;
         }
