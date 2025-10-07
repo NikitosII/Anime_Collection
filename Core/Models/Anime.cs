@@ -20,21 +20,22 @@ namespace Core.Models
         public Guid Id { get; private set; }
         public string Title { get; private set; } = string.Empty;
         public double Rating { get; private set; }
-        public string Status => _status.ToString();
-
+        public string Image { get; private set; }
         private Statuses _status;
+        public string Status => _status.ToString();
         public List<string> Genres { get; private set; } = new List<string>();
 
-        private Anime(Guid id, string title, double rating, Statuses status, List<string> genres)
+        private Anime(Guid id, string title, double rating, Statuses status, List<string> genres, string image)
         {
             Id = id;
             Title = title;
             Rating = rating;
             _status = status;
             Genres = genres;
+            Image = image;
         }
 
-        public static (Anime? anime, string Errors) Create (Guid id, string title,  string status, double rating, List<string> genres)
+        public static (Anime? anime, string Errors) Create (Guid id, string title,  string status, double rating, List<string> genres, string image)
         {
             var errors = new List<string>();
 
@@ -66,11 +67,11 @@ namespace Core.Models
                 return (null, string.Join(Environment.NewLine, errors));
             }
 
-            var anime = new Anime(id, title.Trim(), rating, status_v, genres);
+            var anime = new Anime(id, title.Trim(), rating, status_v, genres, image);
             return (anime,  string.Empty);
         }
 
-        public void Update(string title, string status, double rating, List<string> genres)
+        public void Update(string title, string status, double rating, List<string> genres, string image)
         {
             var errors = new List<string>();
 
@@ -110,6 +111,7 @@ namespace Core.Models
             _status = status_v;
             Rating = rating;
             Genres = genres;
+            Image = image;
         }
 
     }

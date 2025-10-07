@@ -22,6 +22,7 @@ namespace DataAccess.Configurations
                 .HasConversion(
                     v => string.Join(',', v),
                     v => v.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList());
+            builder.Property(x => x.Image).HasMaxLength(500).IsRequired(false);
         }
     }
 }

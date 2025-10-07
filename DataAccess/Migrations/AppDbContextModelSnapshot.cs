@@ -33,6 +33,10 @@ namespace DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("text[]");
 
+                    b.Property<string>("Image")
+                        .IsRequired(false)
+                        .HasColumnType("text");
+
                     b.Property<double>("Rating")
                         .HasColumnType("double precision");
 

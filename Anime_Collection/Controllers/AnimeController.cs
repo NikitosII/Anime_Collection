@@ -3,14 +3,15 @@ using BusinessLogic.Services;
 using Core.Models;
 using Microsoft.AspNetCore.Mvc;
 
+
 namespace Anime_Collection.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class Controller : ControllerBase
+    public class AnimeController : ControllerBase
     {
         private readonly IService _service;
-        public Controller(IService service)
+        public AnimeController(IService service)
         {
             _service = service;
         }
@@ -19,9 +20,10 @@ namespace Anime_Collection.Controllers
         public async Task<ActionResult<IEnumerable<Response>>> GetAll()
         {
             var entities = await _service.GetAllAsync();
-            var response = entities.Select(x => new Response(x.Id, x.Title, x.Status, x.Rating, x.Genres));
+            var response = entities.Select(x => new Response(x.Id, x.Title, x.Status, x.Rating, x.Genres, x.Image));
             return Ok(response);
         }
+
         [HttpGet("filter")]
         public async Task<ActionResult<PaginResponse<Response>>> GetAnime([FromQuery] SearchParams searchParams)
         {
@@ -43,7 +45,8 @@ namespace Anime_Collection.Controllers
                 anime.Title,
                 anime.Status,
                 anime.Rating,
-                anime.Genres
+                anime.Genres,
+                anime.Image
             ));
 
             var response = new PaginResponse<Response>(
@@ -65,7 +68,8 @@ namespace Anime_Collection.Controllers
                 request.Title,
                 request.Status,
                 request.Rating,
-                request.Genres
+                request.Genres,
+                request.Image
                 );
 
             if (!string.IsNullOrEmpty(error))
@@ -97,7 +101,8 @@ namespace Anime_Collection.Controllers
                 request.Title,
                 request.Status,
                 request.Rating,
-                request.Genres);
+                request.Genres,
+                request.Image);
             var response = await _service.UpdateAsync(entity);
             return Ok(response);
 

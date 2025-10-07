@@ -17,7 +17,8 @@ namespace DataAccess.Repository
             entity.Title,
             entity.Status.ToString(),
             entity.Rating,
-            entity.Genres
+            entity.Genres,
+            entity.Image ?? ""
         ).anime;
 
         private Entity ToEntity(Anime model) => new Entity
@@ -27,6 +28,7 @@ namespace DataAccess.Repository
             Status = (Statuses)Enum.Parse(typeof(Statuses), model.Status),
             Rating = model.Rating,
             Genres = model.Genres,
+            Image = model.Image ?? ""
         };
 
         public async Task<IEnumerable<Anime>> GetAll()
@@ -66,7 +68,7 @@ namespace DataAccess.Repository
             var entities = await _context.Anime.Where(x => x.Id == id).ExecuteDeleteAsync();
             if (entities == 0)
             {
-                throw new KeyNotFoundException($"Book with ID {id} not found.");
+                throw new KeyNotFoundException($"Title with ID {id} not found.");
             }
             return id;
         }
