@@ -49,7 +49,7 @@ namespace Anime_Collection.Controllers
 
                 // Возвращаем URL для доступа к файлу
                 var imageUrl = $"/images/{fileName}";
-                return Ok(new { imageUrl });
+                return Ok(new { imageUrl = imageUrl });
             }
             catch (Exception ex)
             {

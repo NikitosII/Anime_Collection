@@ -15,6 +15,6 @@
         public double Rating { get; set; }
         public Statuses Status { get; set; }
         public List<string> Genres { get; set; } = new List<string>();
-        public string? Image {  get; set; }
+        public string Image {  get; set; }
     }
 }
